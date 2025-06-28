@@ -1,7 +1,7 @@
 using UnityEngine;
-using ActionButtonState = com.Kuwiku.Basic2D.IInputReader.ActionButtonState;
+using ActionButtonState = com.Kuwiku.IInputReader.ActionButtonState;
 
-namespace com.Kuwiku.Basic2D
+namespace com.Kuwiku
 {
     /// <summary>
     ///  LocalInputReader is responsible for reading player input from the local device.
@@ -14,8 +14,6 @@ namespace com.Kuwiku.Basic2D
         private GameInput _gameInput;
 
         #region Private Variables for Actions
-        private Vector2 _move;
-        private bool _jumpPressed;
         private bool _actionButtonPressed;
         #endregion
 
@@ -23,12 +21,6 @@ namespace com.Kuwiku.Basic2D
         {
             _gameInput = new GameInput();
             EnableInput();
-
-            _gameInput.Player.Move.performed += ctx => _move = ctx.ReadValue<Vector2>();
-            _gameInput.Player.Move.canceled += ctx => _move = Vector2.zero;
-
-            _gameInput.Player.Jump.performed += ctx => _jumpPressed = true;
-            _gameInput.Player.Jump.canceled += ctx => _jumpPressed = false;
 
             _gameInput.Player.Action.performed += ctx => _actionButtonPressed = true;
             _gameInput.Player.Action.canceled += ctx => _actionButtonPressed = false;
@@ -46,10 +38,6 @@ namespace com.Kuwiku.Basic2D
 
 
         #region Action Callbacks
-        public Vector2 ReadMovement() { return _move; }
-
-        public bool IsJumpPerformed() { return _jumpPressed; }
-
         public ActionButtonState GetActionButtonState()
         {
             if (_actionButtonPressed)

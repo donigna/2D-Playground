@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace com.Kuwiku.Basic2D
+namespace com.Kuwiku
 {
     public class InputManager : MonoBehaviour
     {

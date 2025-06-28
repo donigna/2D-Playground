@@ -1,0 +1,48 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace com.Kuwiku
+{
+    public enum DocumentType
+    {
+        IDCard
+    }
+
+    public class Document : MonoBehaviour
+    {
+        [SerializeField] private List<DocumentField> _documentFields;
+        [SerializeField] private DocumentType _documentType;
+
+        public DocumentType GetDocumentType() => _documentType;
+
+        void Awake()
+        {
+            _documentFields = new List<DocumentField>();
+        }
+
+        // Set Document
+        public void SetDocumentFields(DocumentField[] newDocumentFields)
+        {
+            foreach (var field in newDocumentFields)
+            {
+                _documentFields.Add(field);
+            }
+        }
+
+        public void AddDocumentField(DocumentField newField)
+        {
+            _documentFields.Add(newField);
+        }
+
+        public void ResetField()
+        {
+            _documentFields.Clear();
+        }
+
+        // Get FieldsList
+        public List<DocumentField> GetListFields()
+        {
+            return _documentFields;
+        }
+    }
+}

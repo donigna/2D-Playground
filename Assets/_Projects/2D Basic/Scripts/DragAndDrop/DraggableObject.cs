@@ -7,7 +7,6 @@ namespace com.Kuwiku.Basic2D
     public class DraggableObject : MonoBehaviour, IDraggable
     {
         private Vector3 _initialPosition;
-        private bool _isDragging;
         private Tweener _dragTween;
         private Tweener _returnTween;
         private bool _attached = false;
@@ -35,12 +34,7 @@ namespace com.Kuwiku.Basic2D
             _returnTween?.Kill();
             _initialPosition = transform.position;
             if (_attached) _dropArea.ClearCellByShape(_itemShape, _attachedCell);
-            transform.DOMove(new Vector3(position.x, position.y, _initialPosition.z), 0.2f)
-                                    .OnComplete(() =>
-                                    {
-                                        _isDragging = true;
-
-                                    });
+            transform.DOMove(new Vector3(position.x, position.y, _initialPosition.z), 0.2f);
         }
 
         public void OnDrag(Vector2 position)
@@ -94,7 +88,6 @@ namespace com.Kuwiku.Basic2D
 
         private void ResetDrag()
         {
-            _isDragging = false;
             _returnTween = null; // Reset the return tween
             _dragTween = null;
         }
