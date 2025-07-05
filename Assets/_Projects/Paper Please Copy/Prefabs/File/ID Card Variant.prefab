@@ -1639,17 +1639,41 @@ PrefabInstance:
       propertyPath: m_Name
       value: ID Card Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 3656172935270773960, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
+      propertyPath: m_Size.x
+      value: 3.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3656172935270773960, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3656172935270773960, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4793930907662548739, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
+      propertyPath: m_Name
+      value: Background
+      objectReference: {fileID: 0}
     - target: {fileID: 4912134620382745956, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393847301965846120, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5393847301965846120, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.56
       objectReference: {fileID: 0}
     - target: {fileID: 7035021921351559804, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.72
+      value: 5.8573356
       objectReference: {fileID: 0}
     - target: {fileID: 7035021921351559804, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.04
+      value: -1.8432782
       objectReference: {fileID: 0}
     - target: {fileID: 7035021921351559804, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1684,7 +1708,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4912134620382745956, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 7035021921351559804, guid: 4fc88d4b6a0fd7c4684b01013b5e59e6, type: 3}
       insertIndex: -1
@@ -1717,3 +1742,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _documentFields: []
+  _documentType: 0

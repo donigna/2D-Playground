@@ -1,4 +1,6 @@
+using System.Net;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace com.Kuwiku.Basic2D
 {
@@ -71,8 +73,25 @@ namespace com.Kuwiku.Basic2D
 
         private Vector3 GetMouseWorldPosition()
         {
-            Vector3 mousePosition = Input.mousePosition;
-            return Camera.main.ScreenToWorldPoint(mousePosition);
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = Camera.main.nearClipPlane;
+            Vector3 worldPos = Camera.main.ScreenToWorldPoint(mousePos);
+
+            // Camera Limit
+            float camHeight = Camera.main.orthographicSize * 2;
+            float camWidth = camHeight * Camera.main.aspect;
+
+            Vector3 camPos = Camera.main.transform.position;
+
+            float minX = camPos.x - camWidth / 2;
+            float minY = camPos.y - camHeight / 2;
+            float maxX = camPos.x - camWidth / 2;
+            float maxY = camPos.y - camHeight / 2;
+
+            worldPos.x = Mathf.Clamp(worldPos.x, minX, maxX);
+            worldPos.y = Mathf.Clamp(worldPos.y, minY, maxY);
+
+            return worldPos;
         }
 
         private Vector3 GetMouseWorldPositionCenterBody(Transform body)

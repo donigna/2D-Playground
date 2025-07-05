@@ -1,11 +1,16 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 namespace com.Kuwiku
 {
     public class TableManager : MonoBehaviour
     {
+        public static TableManager Instance;
+
         [SerializeField] private Transform _documentSpawnPoint;
+        [SerializeField] private LetterBox _letterBox;
+        [SerializeField] private GameObject _desk;
 
         [Header("Document Prefabs")]
         [SerializeField] private Document prefabIDCard;
@@ -16,6 +21,13 @@ namespace com.Kuwiku
 
         void Awake()
         {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(this);
+                return;
+            }
+            Instance = this;
+
             if (_objectsOnTable == null) _objectsOnTable = new List<GameObject>();
         }
 
@@ -26,6 +38,16 @@ namespace com.Kuwiku
             if (_currentCustomer != null)
             {
                 RequestDocumentFromCustomer(_currentCustomer);
+            }
+        }
+
+        public void StoreObject(Transform obj)
+        {
+            Vector3 storagePos = new Vector3(_documentSpawnPoint.position.x, _documentSpawnPoint.position.y, obj.position.z);
+            if (Vector3.Distance(obj.position, storagePos) > 0.001f)
+            {
+                DOTween.Kill(obj.transform);
+                obj.transform.DOMove(storagePos, 0.05f).SetEase(Ease.Flash);
             }
         }
 
@@ -49,6 +71,9 @@ namespace com.Kuwiku
                 return;
             }
 
+
+            // Spawn Document
+
             Document docPrefab = null;
 
             switch (doc.GetDocumentType())
@@ -64,9 +89,10 @@ namespace com.Kuwiku
             _objectsOnTable.Add(spawnedDocument.gameObject);
             // Set Data to Document
 
+            // Spawn Letter Document 
+            _letterBox.SpawnDocument(spawnedDocument);
 
         }
         #endregion
-
     }
 }

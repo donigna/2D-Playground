@@ -33,14 +33,14 @@ namespace com.Kuwiku
                     case IInputReader.ActionButtonState.Held:
                         if (CurrentDraggable != null)
                         {
-                            CurrentDraggable.OnDrag(PlayerController.Instance.GetPlayerPosition());
+                            CurrentDraggable.OnDrag(GetDraggingPosition());
                         }
                         break;
 
                     case IInputReader.ActionButtonState.Released:
                         if (CurrentDraggable != null)
                         {
-                            CurrentDraggable.OnDragEnd(PlayerController.Instance.GetPlayerPosition());
+                            CurrentDraggable.OnDragEnd(GetDraggingPosition());
                             EndDrag(CurrentDraggable);
                         }
                         break;
@@ -73,18 +73,12 @@ namespace com.Kuwiku
                 CurrentDraggable = null;
         }
 
-        private Vector3 GetMouseWorldPosition()
-        {
-            Vector3 mousePosition = Input.mousePosition;
-            return Camera.main.ScreenToWorldPoint(mousePosition);
-        }
 
-        private Vector3 GetMouseWorldPositionCenterBody(Transform body)
+        private Vector3 GetDraggingPosition()
         {
-            Vector3 worldPos = GetMouseWorldPosition();
-            worldPos.x -= body.localScale.x;
-            worldPos.y -= body.localScale.y;
-            return worldPos;
+            Vector3 playerPos = PlayerController.Instance.GetPlayerPosition();
+
+            return playerPos;
         }
 
     }
