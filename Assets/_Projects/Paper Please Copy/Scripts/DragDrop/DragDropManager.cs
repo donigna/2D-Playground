@@ -59,6 +59,10 @@ namespace com.Kuwiku
                 IDraggable draggable = hit.collider.GetComponent<IDraggable>();
                 if (draggable != null)
                 {
+                    if (hit.collider.TryGetComponent(out DraggableObject draggableObject))
+                    {
+                        if (draggableObject._letterObj != null) draggable = draggableObject._letterObj;
+                    }
                     CurrentDraggable = draggable;
                     draggable.OnDragStart(targetPos);
                     return true;

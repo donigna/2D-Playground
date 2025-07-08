@@ -9,8 +9,8 @@ namespace com.Kuwiku
         public static TableManager Instance;
 
         [SerializeField] private Transform _documentSpawnPoint;
+        [SerializeField] private Transform _desk;
         [SerializeField] private LetterBox _letterBox;
-        [SerializeField] private GameObject _desk;
 
         [Header("Document Prefabs")]
         [SerializeField] private Document prefabIDCard;
@@ -85,7 +85,8 @@ namespace com.Kuwiku
 
             Vector3 spawnPoint = new Vector3(_documentSpawnPoint.position.x, _documentSpawnPoint.position.y, _documentSpawnPoint.position.z - _objectsOnTable.Count);
 
-            Document spawnedDocument = Instantiate(docPrefab, spawnPoint, Quaternion.identity);
+            Document spawnedDocument = Instantiate(docPrefab, spawnPoint, Quaternion.identity, _desk);
+            spawnedDocument.owner = _currentCustomer;
             _objectsOnTable.Add(spawnedDocument.gameObject);
             // Set Data to Document
 

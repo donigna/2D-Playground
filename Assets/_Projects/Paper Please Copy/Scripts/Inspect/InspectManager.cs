@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,8 @@ namespace com.Kuwiku
 
         [SerializeField] bool _onInspenctionMode = false;
 
-        private DocumentField[] dataField = new DocumentField[2];
+        private IField[] dataField = new IField[2];
+        private RuleField _ruleValidator = null;
 
         void Awake()
         {
@@ -42,8 +44,7 @@ namespace com.Kuwiku
         {
             _onInspenctionMode = true;
             DragDropManager.Instance.canDragging = false;
-            DocumentField[] documentFields = FindObjectsOfType<DocumentField>();
-            foreach (var field in documentFields)
+            foreach (var field in FieldRegistry.Fields)
             {
                 field.SetFieldInteraction(true);
             }
@@ -53,33 +54,60 @@ namespace com.Kuwiku
         {
             _onInspenctionMode = false;
             DragDropManager.Instance.canDragging = true;
-            DocumentField[] documentFields = FindObjectsOfType<DocumentField>();
-            foreach (var field in documentFields)
+            foreach (var field in FieldRegistry.Fields)
             {
                 field.SetFieldInteraction(false);
             }
         }
 
-        public void SetDocumentToInspect(DocumentField documentField)
+        public void SetFieldToInspect(IField field)
         {
             if (dataField[0] == null)
             {
-                dataField[0] = documentField;
+                dataField[0] = field;
 
-            }
-            else if (documentField.fieldType == dataField[0].fieldType && dataField[0].gameObject != documentField.gameObject)
-            {
-                dataField[1] = documentField;
-                if (Compare(dataField[0].id, dataField[1].id))
+                if (dataField[0].FIELDCATEGORY == "RULE")
                 {
-                    Debug.Log("Comparasi Berhasil");
-                    ResetDocumentToInspect();
+                    _ruleValidator = dataField[0].GetObject().GetComponent<RuleField>();
                 }
+            }
+            else if (dataField[0] != field && dataField[1] == null)
+            {
+                dataField[1] = field;
+
+                if (_ruleValidator != null)
+                {
+                    Validate(dataField[1].GetObject(), "Valid", "Invalid");
+                    return;
+                }
+                else if (dataField[1].FIELDCATEGORY == "RULE")
+                {
+                    _ruleValidator = dataField[1].GetObject().GetComponent<RuleField>();
+                    Validate(dataField[0].GetObject(), "Valid", "Invalid");
+                    return;
+                }
+                else if (dataField[0] != null && dataField[1] != null)
+                {
+                    if (Compare(dataField[0], dataField[1]))
+                    {
+                        Debug.Log($"Data {dataField[0].GetObject()} sesuai dengan {dataField[1].GetObject()}");
+                        ResetDocumentToInspect();
+                    }
+                    else
+                    {
+                        Debug.Log($"Data {dataField[0].GetObject()} tidak sesuai dengan {dataField[1].GetObject()}");
+                        ResetDocumentToInspect();
+                    }
+                }
+            }
+            else if (dataField[0] == field)
+            {
+                Debug.Log("Field has been selected!");
             }
             else
             {
-                Debug.Log("Data tidak sesuai");
                 ResetDocumentToInspect();
+                Debug.Log("Document different!");
             }
         }
 
@@ -87,18 +115,59 @@ namespace com.Kuwiku
         {
             for (int i = 0; i < dataField.Length; i++)
             {
-                dataField[i] = null;
+                if (dataField[i] != null)
+                {
+                    dataField[i].Highlight(false);
+                    dataField[i] = null;
+                }
             }
+            _ruleValidator = null;
         }
 
-        public bool Compare(string id1, string id2)
+        public void Validate(GameObject target, string validMessage, string invalidMessage)
         {
-            if (id1 == id2)
+            if (_ruleValidator != null)
             {
-                return true;
+                if (_ruleValidator.RuleValidity(target))
+                {
+                    Debug.Log(validMessage);
+                    return;
+                }
+            }
+            ResetDocumentToInspect();
+
+            Debug.Log(invalidMessage);
+        }
+
+        public bool Compare(IField a, IField b)
+        {
+            // Type to cek
+            DocumentField first = a.GetObject().GetComponent<DocumentField>();
+            switch (first.fieldType)
+            {
+                case FieldType.UID:
+                    break;
+                case FieldType.Name:
+                    if (
+                        a.GetObject().TryGetComponent(out NameDocumentField nameA)
+                        &&
+                        b.GetObject().TryGetComponent(out NameDocumentField nameB))
+                    {
+                        if (nameA.firstName == nameB.lastName && nameB.firstName == nameB.lastName)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // Jika tidak maka tipe data tidak sesuai sehingga tidak bisa dicompare
+                    break;
+                case FieldType.Gender:
+
+                    break;
+                default:
+                    return false;
             }
             return false;
         }
-
     }
 }

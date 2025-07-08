@@ -14,7 +14,6 @@ namespace com.Kuwiku
     public class LetterObject : MonoBehaviour, IDraggable
     {
         public DraggableObject _linkedDrag;
-        public Document _linkedDoc;
 
         private Vector3 _initialPosition;
         private Tweener _dragTween;
@@ -103,6 +102,7 @@ namespace com.Kuwiku
 
         public void OnDragEnd(Vector2 position)
         {
+            _dragTween?.Kill();
             if (_isHandlingEnd) return;
             _isHandlingEnd = true;
             UpdatePoint();
@@ -117,14 +117,32 @@ namespace com.Kuwiku
                 Debug.Log("Object placed at: " + position + " is Empty Area");
                 _returnTween = transform.DOMove(position, 0.2f)
                 .SetEase(Ease.OutSine).OnKill(() => _returnTween = null);
-            }
 
-            if (_showLinkedDoc)
-            {
-                _linkedDrag.OnDragEnd(position);
+                if (_showLinkedDoc)
+                {
+                    _linkedDrag.OnDragEnd(position);
+                }
             }
 
             _isHandlingEnd = false;
+        }
+
+        public void ForceMovoPosition(Vector3 position)
+        {
+            _dragTween?.Kill();
+            _returnTween?.Kill();
+
+            if (_returnTween == null || !_returnTween.IsActive())
+            {
+                _returnTween = transform.DOMove(position, 0.2f)
+                .SetEase(Ease.OutSine)
+                .SetAutoKill(true).OnKill(() => _returnTween = null);
+
+                if (_showLinkedDoc)
+                {
+                    _linkedDrag.ForceMovoPosition(position);
+                }
+            }
         }
 
         private void ResetDrag()

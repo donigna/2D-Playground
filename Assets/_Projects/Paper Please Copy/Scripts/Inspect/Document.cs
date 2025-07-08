@@ -10,6 +10,9 @@ namespace com.Kuwiku
 
     public class Document : MonoBehaviour
     {
+        public Customer owner;
+        public IDMachine IDMachine;
+
         [SerializeField] private List<DocumentField> _documentFields;
         [SerializeField] private DocumentType _documentType;
 

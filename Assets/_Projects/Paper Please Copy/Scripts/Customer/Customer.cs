@@ -15,6 +15,13 @@ namespace com.Kuwiku
             GiveDocument();
         }
 
+        #region Order Handler
+        public void GiveOrder()
+        {
+            Debug.Log("I want ordering ....");
+        }
+        #endregion
+
         #region Document Handler
         public void SetDocument(Document[] newDocuments)
         {

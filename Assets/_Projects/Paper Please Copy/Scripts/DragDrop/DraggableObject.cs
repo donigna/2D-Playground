@@ -9,9 +9,15 @@ namespace com.Kuwiku
         private Tweener _dragTween;
         private Tweener _returnTween;
         public Collider2D Collider { get; private set; }
-        public IDraggable _letterObj;
+        public LetterObject _letterObj;
+        private Document doc;
 
         private bool _isHandlingEnd;
+
+        void Awake()
+        {
+            doc = GetComponent<Document>();
+        }
 
         public void LinkLetter(LetterObject letterObject)
         {
@@ -23,11 +29,6 @@ namespace com.Kuwiku
             _returnTween?.Kill();
             _initialPosition = transform.position;
             transform.DOMove(new Vector3(position.x, position.y, _initialPosition.z), 0.2f);
-
-            if (DragDropManager.Instance.CurrentDraggable != _letterObj)
-            {
-                _letterObj.OnDragStart(position);
-            }
         }
 
         public void OnDrag(Vector2 position)
@@ -46,15 +47,13 @@ namespace com.Kuwiku
                         .SetEase(Ease.OutElastic).SetAutoKill(true).OnKill(() => _dragTween = null);
                 }
 
-                if (DragDropManager.Instance.CurrentDraggable != _letterObj)
-                {
-                    _letterObj.OnDrag(position);
-                }
+
             }
         }
 
         public void OnDragEnd(Vector2 position)
         {
+            _dragTween?.Kill();
             if (_isHandlingEnd) return;
             _isHandlingEnd = true;
 
@@ -66,12 +65,25 @@ namespace com.Kuwiku
                 .SetAutoKill(true).OnKill(() => _returnTween = null);
             }
 
-            if (DragDropManager.Instance.CurrentDraggable != _letterObj)
+            if (doc.IDMachine != null)
             {
-                _letterObj.OnDragEnd(position);
+                doc.IDMachine.VerifyPosition();
             }
 
             _isHandlingEnd = false;
+        }
+
+        public void ForceMovoPosition(Vector3 position)
+        {
+            _dragTween?.Kill();
+            _returnTween?.Kill();
+
+            if (_returnTween == null || !_returnTween.IsActive())
+            {
+                _returnTween = transform.DOMove(position, 0.2f)
+                .SetEase(Ease.OutSine)
+                .SetAutoKill(true).OnKill(() => _returnTween = null);
+            }
         }
 
         private void ResetDrag()
