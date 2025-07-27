@@ -49,6 +49,20 @@ namespace com.Kuwiku
             // Animate
         }
 
+        public void SendbackDocument(Document doc)
+        {
+            LetterObject letterObject = null;
+            switch (doc.GetDocumentType())
+            {
+                case DocumentType.IDCard:
+                    letterObject = idLetterCardPrefab;
+                    break;
+            }
+
+            letterObject.gameObject.SetActive(false);
+            letterObject.UnLinkDocument();
+        }
+
         public bool InsideLetterBox2D(Vector2 position)
         {
             float minX = transform.position.x - transform.localScale.x / 2;

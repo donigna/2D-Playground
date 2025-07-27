@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace com.Kuwiku
         [Header("Document Prefabs")]
         [SerializeField] private Document prefabIDCard;
 
-        private List<GameObject> _objectsOnTable;
+        private List<Document> _objectsOnTable;
 
         private Customer _currentCustomer;
 
@@ -28,18 +29,54 @@ namespace com.Kuwiku
             }
             Instance = this;
 
-            if (_objectsOnTable == null) _objectsOnTable = new List<GameObject>();
+            if (_objectsOnTable == null) _objectsOnTable = new List<Document>();
         }
 
+        #region Customer Table
         public void SetCustomer(Customer customer)
         {
             _currentCustomer = customer;
 
+
             if (_currentCustomer != null)
             {
+                ShelfManager.Instance.ListenCustomer(_currentCustomer);
                 RequestDocumentFromCustomer(_currentCustomer);
             }
         }
+
+        public bool TryGiveOrderedItemToCustomer(ShelfItemSO shelfItem)
+        {
+            if (_currentCustomer.GetOrder() == shelfItem)
+            {
+                _currentCustomer.CompleteOrder(true);
+                StartCoroutine(SendCustomerExit());
+                return true;
+            }
+            return false;
+        }
+
+        IEnumerator SendCustomerExit()
+        {
+            // Shelf
+            ShelfManager shelf = ShelfManager.Instance;
+            shelf.LockShelf(true);
+            if (shelf.opened)
+            {
+                shelf.CloseShelf();
+            }
+            yield return new WaitForSeconds(0.2f);
+
+            // Document
+            SendbackAllDocuments();
+
+            yield return new WaitForSeconds(0.2f);
+
+            // Customer
+            _currentCustomer.Exit();
+        }
+
+        #endregion
 
         public void StoreObject(Transform obj)
         {
@@ -87,12 +124,21 @@ namespace com.Kuwiku
 
             Document spawnedDocument = Instantiate(docPrefab, spawnPoint, Quaternion.identity, _desk);
             spawnedDocument.owner = _currentCustomer;
-            _objectsOnTable.Add(spawnedDocument.gameObject);
+            _objectsOnTable.Add(spawnedDocument);
             // Set Data to Document
 
             // Spawn Letter Document 
             _letterBox.SpawnDocument(spawnedDocument);
 
+        }
+
+        private void SendbackAllDocuments()
+        {
+            foreach (Document item in _objectsOnTable)
+            {
+                item.GetComponent<DraggableObject>()._letterObj.Sendback();
+            }
+            _objectsOnTable.Clear();
         }
         #endregion
     }

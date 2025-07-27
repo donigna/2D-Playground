@@ -24,6 +24,8 @@ namespace com.Kuwiku
         [SerializeField] private Button button;
         [SerializeField] private GameObject highlight;
 
+        protected Document _document;
+
         private string fieldCategory = "DOC";
 
         public string FIELDCATEGORY { get => fieldCategory; }
@@ -53,6 +55,11 @@ namespace com.Kuwiku
         protected virtual void _LocalStart()
         {
             DisplayText("Template Text");
+        }
+
+        public void LinkDocument(Document doc)
+        {
+            _document = doc;
         }
 
         public void TryCompare()

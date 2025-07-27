@@ -7,6 +7,7 @@ namespace com.Kuwiku
 
         protected override void _LocalStart()
         {
+            firstName = _document.owner.customerData.name;
             DisplayText($"{firstName} {lastName}");
         }
     }

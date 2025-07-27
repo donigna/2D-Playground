@@ -3,11 +3,6 @@ using UnityEngine;
 
 namespace com.Kuwiku
 {
-    public enum DocumentType
-    {
-        IDCard
-    }
-
     public class Document : MonoBehaviour
     {
         public Customer owner;
@@ -20,7 +15,19 @@ namespace com.Kuwiku
 
         void Awake()
         {
-            _documentFields = new List<DocumentField>();
+            RegisterDocumentFields();
+        }
+
+        public void RegisterDocumentFields()
+        {
+            if (_documentFields.Count > 0)
+            {
+                // register all _document fields
+                foreach (var field in _documentFields)
+                {
+                    field.LinkDocument(this);
+                }
+            }
         }
 
         // Set Document

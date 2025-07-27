@@ -24,6 +24,7 @@ namespace com.Kuwiku
         private bool _objStored;
         private bool _isInternalUpdate = false;
         private bool _isHandlingEnd = false;
+        private bool _listeningUpdate = false;
 
 
         private Point point;
@@ -43,10 +44,37 @@ namespace com.Kuwiku
             UpdatePoint();
         }
 
+        void Update()
+        {
+            if (_listeningUpdate)
+            {
+                if (_instanceMaterial.GetFloat("_flowX") > 1 || _instanceMaterial.GetFloat("_flowX") < -1 || _instanceMaterial.GetFloat("_flowY") > 1 || _instanceMaterial.GetFloat("_flowY") < -1)
+                {
+                    _showLinkedDoc = true;
+                    _objStored = false;
+                }
+                else
+                {
+                    _showLinkedDoc = false;
+                    if (_objStored) return;
+                    _objStored = true;
+                    TableManager.Instance.StoreObject(_linkedDrag.transform);
+
+                }
+                UpdatePoint();
+            }
+        }
+
         public void LinkDocument(Document doc)
         {
             _linkedDrag = doc.GetComponent<DraggableObject>();
             _linkedDrag.LinkLetter(this);
+        }
+
+        public void UnLinkDocument()
+        {
+            Destroy(_linkedDrag.gameObject);
+            _linkedDrag = null;
         }
 
         public void OnDragStart(Vector2 position)
@@ -73,15 +101,8 @@ namespace com.Kuwiku
                     _dragTween = transform.DOMove(targetPos, 1f)
                         .SetEase(Ease.OutElastic).SetAutoKill(true).OnKill(() => _dragTween = null);
                 }
-                if (_instanceMaterial.GetFloat("_flowX") > 1 || _instanceMaterial.GetFloat("_flowX") < -1 || _instanceMaterial.GetFloat("_flowY") > 1 || _instanceMaterial.GetFloat("_flowY") < -1)
-                {
-                    _showLinkedDoc = true;
-                    _objStored = false;
-                }
-                else
-                {
-                    _showLinkedDoc = false;
-                }
+
+                _listeningUpdate = true;
 
                 if (_showLinkedDoc)
                 {
@@ -94,7 +115,6 @@ namespace com.Kuwiku
                 else
                 {
                     if (_objStored) return;
-                    TableManager.Instance.StoreObject(_linkedDrag.transform);
                     _objStored = true;
                 }
             }
@@ -138,9 +158,35 @@ namespace com.Kuwiku
                 .SetEase(Ease.OutSine)
                 .SetAutoKill(true).OnKill(() => _returnTween = null);
 
+                _listeningUpdate = true;
+
                 if (_showLinkedDoc)
                 {
                     _linkedDrag.ForceMovoPosition(position);
+                }
+            }
+        }
+
+        public void Sendback()
+        {
+            _dragTween?.Kill();
+            _returnTween?.Kill();
+
+            if (_returnTween == null || !_returnTween.IsActive())
+            {
+                _returnTween = transform.DOMove(_initialPosition, 0.2f)
+                .SetEase(Ease.OutSine)
+                .SetAutoKill(true).OnKill(() =>
+                {
+                    ResetDrag();
+                    _instanceMaterial.SetFloat("_flowX", 0);
+                    _instanceMaterial.SetFloat("_flowY", 0);
+                    LetterBox.Instance.SendbackDocument(_linkedDrag.GetComponent<Document>());
+                });
+
+                if (_showLinkedDoc)
+                {
+                    _linkedDrag.ForceMovoPosition(_initialPosition);
                 }
             }
         }
@@ -149,6 +195,7 @@ namespace com.Kuwiku
         {
             _returnTween = null; // Reset the return tween
             _dragTween = null;
+            _listeningUpdate = false;
         }
 
         private void UpdatePoint()

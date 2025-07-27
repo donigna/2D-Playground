@@ -71,6 +71,11 @@ namespace com.Kuwiku
             return false;
         }
 
+        public void SetDraggedObject(IDraggable draggable)
+        {
+            CurrentDraggable = draggable;
+        }
+
         public void EndDrag(IDraggable obj)
         {
             if (CurrentDraggable == obj)

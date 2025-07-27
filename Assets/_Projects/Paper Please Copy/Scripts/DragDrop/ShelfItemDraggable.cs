@@ -3,27 +3,23 @@ using UnityEngine;
 
 namespace com.Kuwiku
 {
-    public class DraggableObject : MonoBehaviour, IDraggable
+    public class ShlefItemDraggable : MonoBehaviour, IDraggable
     {
+        [SerializeField] private SpriteRenderer _sprite;
+        public Collider2D Collider { get; private set; }
+
         private Vector3 _initialPosition;
         private Tweener _dragTween;
         private Tweener _returnTween;
-        public Collider2D Collider { get; private set; }
-        public LetterObject _letterObj;
-        private Document doc;
-
         private bool _isHandlingEnd;
 
-        void Awake()
-        {
-            doc = GetComponent<Document>();
-        }
+        [SerializeField] private ShelfItemSO _shelfItemSO;
 
-        public void LinkLetter(LetterObject letterObject)
+        public void Set(ShelfItemSO shelfItemSO)
         {
-            _letterObj = letterObject;
+            _shelfItemSO = shelfItemSO;
+            _sprite.sprite = shelfItemSO.image;
         }
-
 
         public void OnDragStart(Vector2 position)
         {
@@ -66,10 +62,9 @@ namespace com.Kuwiku
                 .SetAutoKill(true).OnKill(() => _returnTween = null);
             }
 
-            if (doc.IDMachine != null)
-            {
-                doc.IDMachine.VerifyPosition();
-            }
+            // ketika posisi akhir merupakan posisi didalam sendbox,
+            // maka trigger send di sendbox
+            ShelfManager.Instance.DropItem(position, _shelfItemSO);
 
             _isHandlingEnd = false;
         }

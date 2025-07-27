@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,21 +6,69 @@ namespace com.Kuwiku
 {
     public class Customer : Entity
     {
-        [SerializeField] private List<Document> _documents;
+        public Action OnGivingOrder;
 
+        public string CustomerID; // Gunakan ini untuk identifikasi unik
+        public CustomerData customerData;
+        public bool IsUnique;
+        [SerializeField] private List<Document> _documents;
+        [SerializeField] private ShelfItemSO shelfItemSO;
+        private Animator anim;
         private List<Document> _documentGived;
+
+        // flags
+        private bool completOrder = false;
+
+        void Start()
+        {
+            anim = GetComponent<Animator>();
+        }
+
+        public void InitializeData(CustomerData data)
+        {
+            customerData = data;
+        }
 
         public void OnPlace()
         {
             Debug.Log("Customer is on Place");
-            GiveDocument();
+            TableManager.Instance.SetCustomer(this);
+        }
+
+        public void Exit()
+        {
+            Debug.Log("Customer Going to Exit");
+            anim.CrossFade("Exit", 0.2f);
+        }
+
+        public void OnExit()
+        {
+            CustomerManager.Instance.CreateNewCustomer();
+            Destroy(gameObject);
         }
 
         #region Order Handler
         public void GiveOrder()
         {
             Debug.Log("I want ordering ....");
+            OnGivingOrder?.Invoke();
         }
+
+        public ShelfItemSO GetOrder()
+        {
+            return shelfItemSO;
+        }
+
+        public void CompleteOrder(bool val)
+        {
+            completOrder = val;
+        }
+
+        public bool GetOrderStatus()
+        {
+            return completOrder;
+        }
+
         #endregion
 
         #region Document Handler
@@ -67,15 +116,11 @@ namespace com.Kuwiku
 
             }
         }
-
-        public void GiveDocument()
-        {
-            // Random Chance to give document 
-            Debug.Log(
-                "Giving Document"
-            );
-            FindAnyObjectByType<TableManager>().SetCustomer(this);
-        }
         #endregion
+    }
+
+    public class BobbyTheClown : Customer
+    {
+        // Unique Customer
     }
 }
